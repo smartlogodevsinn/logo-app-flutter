@@ -7,7 +7,20 @@ class IndustryModel {
     required this.noiconIndustry,
   });
 
-  factory IndustryModel.fromJson(Map<String, dynamic> json) {
+  factory IndustryModel.fromJson(dynamic json) {
+    // API may return a bare list of industries instead of an object
+    if (json is List) {
+      return IndustryModel(
+        industry: json
+            .whereType<Map<String, dynamic>>()
+            .map((e) => Industry.fromJson(e))
+            .toList(),
+        noiconIndustry: [],
+      );
+    }
+    if (json is! Map<String, dynamic>) {
+      return IndustryModel(industry: [], noiconIndustry: []);
+    }
     return IndustryModel(
       industry: (json['industry'] as List?)
               ?.map((e) => Industry.fromJson(e))
